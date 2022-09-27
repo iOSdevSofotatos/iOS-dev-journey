@@ -3,5 +3,5 @@
 
 ## What is meant by MVVM?
 
-- Model, View and ViewModel
+Model, View and ViewModel
 It is a design paradigm that makes it clear where all the dfferent components of your code go and how they interact with each other.

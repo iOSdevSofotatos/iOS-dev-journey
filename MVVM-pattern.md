@@ -6,6 +6,8 @@
 Model, View and ViewModel.
 It is a design paradigm that makes it clear where all the dfferent components of your code go and how they interact with each other.
 
-It separates the user interface code, what we call the "View", from the backend or logic of our application, which we call the Model.
+It also separates the user interface code, what we call the "View", from the backend or logic of our application, which we call the Model.
 
-### Lets talk a bit more about Model and View and the mechanisms in MVVM that hook them up to each other.
+### Lets talk a bit more about the Model and View and the mechanisms in MVVM that hook them up to each other.
+
+- The Model is completely UI independent 

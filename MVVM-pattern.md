@@ -57,10 +57,40 @@ But having this rule, that the View always has to go through the ViewModel, puts
 
 First, a ViewModel is constantly noticing changes in the Model. Now it can do that in any way it wants. If your Model is a struct, like we are gonna have in our Memorize game. Then it is very easy. Swift has the ability to automatically track changes to a struct. If the Model where lets say something more complicated like a SQL database, it is quite easy to insert something into the database, which notifies you when there are changes. Or if the Model were something on the network, then obviously there are ways to get woken up when data appears from the network, and the ViewModel could do that as well.
 
-***
 But however it does it, it is obviously a must in MVVM that the ViewModel be able to track all changes in the Model. That is fundamental. Now when the ViewModel does notice a change, it immediately publishes "something changed" to the entire world, and anyone who is interested can listen for these pronouncements (ανακοινώσεις). 
 
 ### Well, why did it do it this way?
+
+Why does it say "something changed" to the entire world? Well, for a very important reason, the ViewModel does not wanna have any connections to any of the Views that are using it to access the Model. This is a very important point. We never have a pointer or any other data structure in a ViewModel that knows anything about a View struct. It does have a general idea of how Views wanna look the Models data, of course, because it serves that interpreting function (ερμηνευτική λειτουργία) we talked about, but it has no connection to any specific View ever. And that is why it publishes to the whole world, "something changed"
+
+It is up to the Views to sign themselves up to listen for these change announcements. The terminology we use here is that the Views are subscribing to what the ViewModel is publishing! And what is publishing is, something changed in the Model.
+
+So when swiftUI sees that a publishing event has happened for a View that is subscribed to that ViewModel's announcement, it asks the View for his body var and redraws it. When the View is providing that body var, it is, of course, looking at the current state of the Model, and it is doing that through the ViewModel. So that way, the ViewModel can do its job of interpreting the Model data for the View. That's it! simple!
+
+To make all this easy to set up, when a View sets itself up to access the Model through the ViewModel, it does so in a way that it simultaneously subscribes to the announcements that the ViewModel is making about changes in the Model. Therefore it can never be out of sync with the Model.
+
+## something
+
+We will go through all of these View setting itself up to access to the Model through the ViewModel mechanisms this week in demo
+
+- ObservableObject (ViewModel)
+- @Published (ViewModel)
+- objectWillChange.send() (ViewModel)
+
+- @ObservedObject (View)
+- @Binding (View)
+- .onReceive (View)
+- @EnviromentObject (View)
+- .enviromentObject() (View)
+
+Above are some of the keywords involved about the MVVM mechanisms
+
+### What about the other direction?
+
+We talked about how the View is always finding out about changes and being rebuilt to show the latest state of the Model, but how does the Model get changed by touch events happening in the View?
+
+
+
 
 
 

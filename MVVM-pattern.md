@@ -119,3 +119,13 @@ A large Application can have many different Models and of course dozens or even 
 
 That body var must always return something based on the current state of the Model, that is what it does, that is almost the definition of a body var
 Return a UI that reflects the state of the Model
+
+```swift
+import swiftUI
+
+struct Memorize: View {
+  var body: some View {
+    Text("hello world")
+  }
+}
+```

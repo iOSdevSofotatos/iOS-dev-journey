@@ -154,6 +154,20 @@ So there is another private called private(set), and private(set) tells Swift th
 
 ## something else
 
+The ViewModel has to modify the View somehow notify the View when the model changed and you can achieve that by making sure the ViewModel conforms to this: 
+```swift
+import swiftUI
+
+class contentViewModel: ObservableObject {
+
+}
+```
+
+
+
+
+
+
 A large Application can have many different Models and of course dozens or even hundreds of Views
 
 That body var must always return something based on the current state of the Model, that is what it does, that is almost the definition of a body var

@@ -163,6 +163,81 @@ class contentViewModel: ObservableObject {
 }
 ```
 
+Also we will instantiate the Model inside the ViewModel like this..
+
+Model:
+```swift
+struct Person {
+  var name: String
+  var birthday: Date
+}
+```
+
+ViewModel:
+
+```swift
+import swiftUI
+
+class contentViewModel: ObservableObject {
+  @Published private var alice = Person(name: "Alice", birthday: Date())
+  
+  var name: String {
+    alice.name
+  }
+  
+  var age: String {
+    // date magic -> age String
+    return "32"
+  }
+}
+```
+
+We also need to have our ViewModel inside of our View and observe the changes, there are several ways to achieve that
+
+View:
+
+```swift
+import swiftUI
+
+struct ContentView: View {
+  @StateObject var viewModel = ContentViewModel()
+  var body: some view {
+    Text(viewModel.name)
+  }
+}
+```
+
+Lastly lets make a button to change the name when pressed and we will tell the ViewModel to do that, instead of directly accessing the Model
+
+To do that the ViewModel needs to have an intent
+
+ViewModel:
+
+```swift
+import swiftUI
+
+class contentViewModel: ObservableObject {
+  @Published private var alice = Person(name: "Alice", birthday: Date())
+  
+  var name: String {
+    alice.name
+  }
+  
+  var age: String {
+    // date magic -> age String
+    return "32"
+  }
+  
+  // intent
+  func changeName(_ name: String) {
+    alice.name = name
+  }
+}
+```
+
+
+
+
 
 
 

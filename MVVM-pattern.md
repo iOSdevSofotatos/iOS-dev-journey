@@ -109,11 +109,50 @@ Well all the stuff we talked about earlier. The Model changes as a result of tho
 
 ![MVVM](https://user-images.githubusercontent.com/112722460/193465016-a784f13b-4bed-45f9-8003-10c4104913d5.jpg)
 
+## How does the connection happen in MVVM between the Model, the View and the ViewModel
+
+Well the job of the ViewModel is to be the intermediary between the Model and the View. So it needs to have a connection to the Model. And in fact, our ViewModel is going to create its own Model. That is not always the case for a ViewModel! Again sometimes the Model is a network database that already exists and it is going to connect to it. But, many times it creates the Model that it provides the window won, and it is the ViewModel's job to either make that thing persist on disk or on the network or something, or it is the kind of thing where the game just goes away when this ViewModel goes away, which is going to be true for our emojiMemoryGame.
+
+While you are playing it is there, but if the ViewModel goes away, then the game is over it is gone. Because alot of ViewModels create their own Model, alot of times we will say that the "ViewModels" are the truth in our app. Now of course the model is the truth, But the ViewModel if it is creating its own Model, it is essentially the ViewModel itself is the truth. It stores that truth in the Model. But if you hear people say, "Oh and I'm creating this ViewModel, it is the source of truth for my UI", that is not an unreasonable way to look at it as well.
+
+So our Model is just a struct so we are gonna make a var called Model that is gonna be of type MemoryGame
+
+Lets talk about the ViewModel's role as gatekeeper to the Model. What do we mean by that gatekeeper?
+
+It is the ViewModel's job really to protect the Model against ill-behaving Views or anyone else really who has access to the ViewModel. And one of the ways we do that is by making our Model private!
+
+This keyword private, you are gonna see and be typing alot!
+
+Private means that only the ViewModel's code itself can see the Model. That protects the Model against any Views reaching in and trying to change things. So we wanna make our vars and our funcs private, unless we are sure we wanna allow other structs and classes to access them.
+
+Although sometimes fully private is a little too restricitve. For example, in our memory game, people really do need to see those cards, how else is the View is gonna draw the cards if it can't see them?
+
+So there is another private called private(set), and private(set) tells Swift that other classes and structs can look at the "private(set) var model: MemoryGame", but they can't change it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## something else
-
-
-
-
 
 A large Application can have many different Models and of course dozens or even hundreds of Views
 

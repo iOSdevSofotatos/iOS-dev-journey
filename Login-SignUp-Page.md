@@ -54,11 +54,30 @@ We have our Model, so this is what models the data that is in our database and w
 and we have the configure function, So this just has one function in here and it configures the database we will be using, it adds our migration and it runs the routes functiom
 
 ## SOURCES -> APP -> routes.swift
-and then routes function is where all of our routes are so different endpoints that will be hit,will be requesting from with our iOS application, so we saw first the get route. So these are different endpoints that our API has.
+and then routes function is where all of our routes are so different endpoints that will be hit,will be requesting from with our iOS application, so we saw first the get route. So these are different endpoints that our API has. and then here is the todo controller, because controllers has their own routes
 
+## SOURCES -> APP -> RUN -> main.swift
+Inside the run folder, this contains the code that we need to get out application up and running. So you can see it calls the configure function that we defined right there
 
+## SOURCES -> APP -> TESTS -> AppTests -> AppTests.swift
+Inside of test by default, vapor gives us a unit test, that we can use. So the unit right here is starting the application , we are going to the route/hello and then we want to assert that this is okay and it gives us back Hello World
 
+## SOURCES -> APP -> docker-compose.yml
+We also have a docker composed file. This is used to create a multi docker application so this configures our API to run and for the database to run
 
+## SOURCES -> APP -> DockerFile
+in docker file this is what is used to actually create a Docker image 
+
+## SOURCES -> APP -> Package.resolved
+last is package.resolved. These are the exact versions of the packages that are inside of our project that are defined in package.swift. So if somebody where to download and clone your application from like github, they will use these exact versions, unless you go and ask to like upadate the packages
+
+Part 1 completed.............................................................................................................
+
+# Part 2
+
+So in this part, we will see how to use vapor to create tables, use migrations and how to read and write data to the database
+
+lets see how to use vapor to build our own API!
 
 
 

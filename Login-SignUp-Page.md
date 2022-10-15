@@ -29,10 +29,32 @@ and then when we are going to read from the database, it starts with the iOS app
 
 ![Screenshot 2022-10-16 at 1 34 33 AM](https://user-images.githubusercontent.com/112722460/196010072-f84685da-4c33-4853-9c58-ec234c7e7bb7.jpg)
 
+server is the api i think, different from database
 
-So we had to download homebrew
+So we had to download homebrew, which is a package manager that we had to use to download everything else and we had to download postman. So postman allows us to test the API without actually needing to create the iOS app first. And with the database we are going to be using azure data studio and that allow us to look at the data, directely in the database without having to use our API
 
+![Screenshot 2022-10-16 at 1 41 16 AM](https://user-images.githubusercontent.com/112722460/196010203-a1bc81a2-59e2-4a04-b4f7-1a12f4daf217.jpg)
 
+if we open postman and go to that adress that vapor is running px 127.0.0.1:8080
+
+# inside vapor xcode
+
+![Screenshot 2022-10-16 at 2 07 49 AM](https://user-images.githubusercontent.com/112722460/196010764-144a193c-3eb8-48b7-8bc9-df1bdc08da63.jpg)
+
+## SOURCES -> APP -> CONTROLLERS
+we can group logic inside of controllers rather than putting it all in a single file. 
+
+## SOURCES -> APP -> Migrations
+Migrations are used with the database. So we will be making what are called database migrations and this is things like preparing our database, meaning creating new tables in our database.
+
+## SOURCES -> APP -> Models
+We have our Model, so this is what models the data that is in our database and we can use these within our application
+
+## SOURCES -> APP -> configure.swift
+and we have the configure function, So this just has one function in here and it configures the database we will be using, it adds our migration and it runs the routes functiom
+
+## SOURCES -> APP -> routes.swift
+and then routes function is where all of our routes are so different endpoints that will be hit,will be requesting from with our iOS application, so we saw first the get route. So these are different endpoints that our API has.
 
 
 

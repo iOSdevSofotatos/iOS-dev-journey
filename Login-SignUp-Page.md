@@ -13,6 +13,39 @@ Vapor is a framework developed in Swift language that provides useful tools to d
 
 Azure data studio is basically a gui that we will be using to read from our database. So we can read the data in our database, without needing the API and without needing the iOS app.
 
-we are going to create the backend for an iOS app that will then talk to the database
-
 vapor new e-shop to create a new vapor project in the terminal
+
+we are going to create the backend for an iOS app that will then talk to the database. So the four database operations are.. create, read, update and delete. So create means adding new data to the database, read is reading the data from the database, update is updating any data that is already in the database and then delete is to delete any data from the database.
+.............................................................................................................................
+
+when we write to the database we are only performing 3 of the 4 operations (create, update, delete) (check image below)
+
+So we will be doing create, so that is creating some data on the iOS app, sending the data to our server to the vapor api and then that sends it and saves it to the database and then when we update and delete, that is again an operation coming from the iOS app telling the API to do something, then the API is taking that and doing something to the database
+
+![Screenshot 2022-10-16 at 1 30 36 AM](https://user-images.githubusercontent.com/112722460/196010064-984e322e-3f46-49b3-bd65-8e2a5f569bba.jpg)
+
+
+and then when we are going to read from the database, it starts with the iOS app asking for data, it goes to the api or the server that tells it, hey this is what data we need, and then it translates it and grabs that data from the database. So the database takes that data, it gives it back to our server and then sends it back to the iOS app
+
+![Screenshot 2022-10-16 at 1 34 33 AM](https://user-images.githubusercontent.com/112722460/196010072-f84685da-4c33-4853-9c58-ec234c7e7bb7.jpg)
+
+
+So we had to download homebrew
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

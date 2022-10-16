@@ -80,6 +80,26 @@ So in this part, we will see how to use vapor to create tables, use migrations a
 lets see how to use vapor to build our own API!
 
 
+we have created our table using migrations. And we learned that migrations are like GIT, but for our database, we created 2 routes, one to read data and one to write data, and we are writing and reading a list of usernames. lastly we used Postman and Azure Data Studio so we can look at the data in our database and test our API without needing to write the iOS app at first.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

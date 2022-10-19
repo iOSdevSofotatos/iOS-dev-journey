@@ -1,4 +1,10 @@
 
+ Vapor API
+ 
+ If you want some of the control of setting up your own server with minimal cost and maintenance of it, Heroku is a great option. If you're starting from scratch and want something to play with, their free tier is pretty decent and includes a PostgreSQL database
+ 
+ 
+
 So I use ASP.NET?, meaning I create a project on Xcode in swiftUI
 Then I also create a local SQL server (this is where you can also spin up a paid online server with microsoft, amazon, etc.) and create the tables I need for it (like username, password fields to store user info)
 Then i go back to my ASP.NET project, create an API Controller, and add the url routes and functions to get information from the database
@@ -81,6 +87,8 @@ lets see how to use vapor to build our own API!
 
 
 we have created our table using migrations. And we learned that migrations are like GIT, but for our database, we created 2 routes, one to read data and one to write data, and we are writing and reading a list of usernames. lastly we used Postman and Azure Data Studio so we can look at the data in our database and test our API without needing to write the iOS app at first.
+
+models and migrations are connected in vapor api
 
 
 

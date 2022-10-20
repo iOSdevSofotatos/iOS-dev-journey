@@ -1,3 +1,8 @@
+So to access our local database first we need to run our database with Docker and then we need to run our API 
+inside our api project in terminal
+run docker compose up db
+then run vapor run
+
 
  Vapor API
  

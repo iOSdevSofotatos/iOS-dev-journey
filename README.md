@@ -1,5 +1,96 @@
-# iOS-dev-journey
 
-As a hiring manager myself; I'm a lot more impressed with *how* you make something than *what* you make. If you've taken even the 'simple' use case of a Weather App but architected it well; documented with README.md, set up a CI/CD pipeline, written Unit & UI tests, set up Crashlytics, debug logging, shown ability to incrementally build & refactor with good Git comments, able to explain your design choices; then you're an instant hire. The simplest applications can be used as a vehicle to show good engineering.
+Uses Fluent to interact and store that information in a PostgreSQL database
+and running that database on Docker
 
-GPS plus map app: app which shows data of a json on map (some specific venues like restaurants
+First, create a new directory in your home directory or somewhere sensible to work on your Vapor projects. 
+For example, enter the following commands in Terminal:
+
+mkdir vapor
+cd vapor
+
+This creates a new directory in your home folder called vapor and navigates you there. Next, create your project with:
+
+vapor new vapor-project-name
+
+The toolbox then asks if you’d like to use Fluent. For now, type n followed by Enter. You’ll learn about Fluent in a future tutorial. 
+The toolbox then generates your project for you
+
+To build and start your app, run:
+
+cd vapor-project-name
+open Package.swift
+
+This builds and runs the app. The first time you run it, it can take some time since it must fetch all the dependencies. 
+The template has a predefined route, so open your browser and visit http://localhost:8080/hello and see the response!
+
+The template contains everything you need to set up your app and you shouldn’t need to change main.swift
+or the Run module. Your code lives in App or any other modules you define
+
+# Creating Your Own Routes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Heroku when it is time, until then keep it local
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

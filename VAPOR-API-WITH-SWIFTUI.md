@@ -26,6 +26,8 @@ The template has a predefined route, so open your browser and visit http://local
 The template contains everything you need to set up your app and you shouldn’t need to change main.swift
 or the Run module. Your code lives in App or any other modules you define
 
+# Routing
+
 ## Creating Your Own Routes
 
 Now that you’ve made your first app, it’s time to see how easy it is to add new routes with Vapor
@@ -80,6 +82,7 @@ Note that you could also write this using "on" followed by the method
 app.on(.GET, "hello", "vapor") { ... }
 
 With this route registered, the example HTTP request from above will result in the following HTTP response
+but first lets explain what HTTP response is
 
 ### HTTP response: 
 An HTTP response is made by a server to a client. The aim of the response is to provide the client with the resource it requested, or inform the client that the action it requested has been carried out; or else to inform the client that an error occurred in processing its request
@@ -119,23 +122,405 @@ Hello, swift!
 Now that you understand the basics, check out each section to learn more about parameters, groups, and more
 
 ## Routes
+A route specifies a request handler for a given HTTP method and URI path. It can also store additional metadata
 
+## Methods
+Routes can be registered directly to your Application using various HTTP method helpers.
 
+// responds to GET /foo/bar/baz
+app.get("foo", "bar", "baz") { req in
+    ...
+}
 
+Route handlers support returning anything that is "ResponseEncodable". This includes "Content", an "async" closure, and any "EventLoopFutures" where the future value is "ResponseEncodable"
 
+ResponseEncodable ??
+    
+You can specify the return type of a route using -> T before in. This can be useful in situations where the compiler cannot determine the return type
+    
+app.get("foo") { req -> String in
+    return "bar"
+}
 
+These are the supported route helper methods:
 
+- get
+- post
+- patch
+- put
+- delete
+    
+In addition to the HTTP method helpers, there is an on function that accepts HTTP method as an input parameter
 
+// responds to OPTIONS /foo/bar/baz
+app.on(.OPTIONS, "foo", "bar", "baz") { req in
+    ...
+}
 
+## What is the HTTP OPTIONS request used for?
+The HTTP OPTIONS method is used to describe communication options for the target resource. Browsers send an HTTP OPTIONS request to find out the supported HTTP methods and other options supported for the target resource before sending the actual request. HTTP OPTIONS requests allow clients to obtain parameters and requirements for specific resources and server capabilities without taking action on the resource or requesting the resource
+    
+## Path Component
 
+Each route registration method accepts a variadic list of PathComponent. This type is expressible by string literal and has four cases:
 
+- Constant (foo)
+- Parameter (:foo)
+- Anything (*)
+- Catchall (**)
+  
+### Constant
+This is a static route component. Only requests with an exactly matching string at this position will be permitted
+    
+// responds to GET /foo/bar/baz
+app.get("foo", "bar", "baz") { req in
+    ...
+}    
+    
+### Parameter   
+This is a dynamic route component. Any string at this position will be allowed. A parameter path component is specified with a : prefix. The string following the : will be used as the parameter's name. You can use the name to later fetch the parameters value from the request    
+    
+ // responds to GET /foo/bar/baz
+// responds to GET /foo/qux/baz
+// ...
+app.get("foo", ":bar", "baz") { req in
+    ...
+}   
+    
+### Anything    
+This is very similar to parameter except the value is discarded. This path component is specified as just *.
 
+// responds to GET /foo/bar/baz
+// responds to GET /foo/qux/baz
+// ...
+app.get("foo", "*", "baz") { req in
+    ...
+}
+    
+### Catchall   
+This is a dynamic route component that matches one or more components. It is specified using just **. Any string at this position or later positions will be matched in the request
+    
+// responds to GET /foo/bar
+// responds to GET /foo/bar/baz
+// ...
+app.get("foo", "**") { req in 
+    ...
+}
+    
+## Parameters    
+When using a parameter path component (prefixed with :), the value of the URI at that position will be stored in req.parameters. You can use the name of the path component to access the value
+    
+// responds to GET /hello/foo
+// responds to GET /hello/bar
+// ...
+app.get("hello", ":name") { req -> String in
+    let name = req.parameters.get("name")!
+    return "Hello, \(name)!"
+}   
+    
+req.parameters.get also supports casting the parameter to LosslessStringConvertible types automatically    
 
+// responds to GET /number/42
+// responds to GET /number/1337
+// ...
+app.get("number", ":x") { req -> String in 
+    guard let int = req.parameters.get("x", as: Int.self) else {
+        throw Abort(.badRequest)
+    }
+    return "\(int) is a great number"
+}    
+    
+The values of the URI matched by Catchall (**) will be stored in req.parameters as [String] (array of strings). You can use req.parameters.getCatchall to access those components   
+    
+// responds to GET /hello/foo
+// responds to GET /hello/foo/bar
+// ...
+app.get("hello", "**") { req -> String in
+    let name = req.parameters.getCatchall().joined(separator: " ")
+    return "Hello, \(name)!"
+}  
+    
+## Body Streaming
+When registering a route using the on method, you can specify how the request body should be handled. By default, request bodies are collected into memory before calling your handler. This is useful since it allows for request content decoding to be synchronous (συγχρονισμένα) even though your application reads incoming requests asynchronously (ασύγχρονα)  
+    
+ By default, Vapor will limit streaming body collection to 16KB in size. You can configure this using app.routes
+ 
+// Increases the streaming body collection limit to 500kb
+app.routes.defaultMaxBodySize = "500kb"   
+    
+If a streaming body being collected exceeds the configured limit, a 413 Payload Too Large error will be thrown
+    
+To configure request body collection strategy for an individual route, use the body parameter
+    
+// Collects streaming bodies (up to 1mb in size) before calling this route.
+app.on(.POST, "listings", body: .collect(maxSize: "1mb")) { req in
+    // Handle request. 
+}    
+    
+If a maxSize is passed to collect, it will override the application's default for that route. To use the application's default, omit (παραλείψτε) the maxSize argument  
+    
+For large requests, like file uploads, collecting the request body in a buffer can potentially strain your system memory. To prevent the request body from being collected, use the stream strategy
+    
+// Request body will not be collected into a buffer.
+app.on(.POST, "upload", body: .stream) { req in
+    ...
+}
+    
+When the request body is streamed, req.body.data will be nil. You must use req.body.drain to handle each chunk as it is sent to your route
+    
+## Case Insensitive Routing  
+Default behavior for routing is both case-sensitive (με διάκριση πεζών-κεφαλαίων) and case-preserving. Constant path components can alternately be handled in a case-insensitive and case-preserving manner for the purposes of routing; to enable this behavior, configure prior to application startup:    
+    
+app.routes.caseInsensitive = true    
+    
+No changes are made to the originating request; route handlers will receive the request path components without modification   
+        
+## Viewing Routes    
+You can access your application's routes by making the Routes service or using app.routes.
 
+print(app.routes.all) // [Route]    
 
+## Metadata
+All route registration methods return the created Route. This allows you to add metadata to the route's userInfo dictionary. There are some default methods available, like adding a description
+    
+app.get("hello", ":name") { req in
+    ...
+}.description("says hello")
+    
+## Route Groups
+Route grouping allows you to create a set of routes with a path prefix or specific middleware. Grouping supports a builder and closure based syntax.
 
+All grouping methods return a RouteBuilder meaning you can infinitely mix, match, and nest your groups with other route building methods    
+       
+## Path Prefix
+Path prefixing route groups allow you to prepend (προπαρασκευάζω) one or more path components to a group of route
+    
+let users = app.grouped("users")
+// GET /users
+users.get { req in
+    ...
+}
+// POST /users
+users.post { req in
+    ...
+}
+// GET /users/:id
+users.get(":id") { req in
+    let id = req.parameters.get("id")!
+    ...
+} 
+    
+Any path component you can pass into methods like get or post can be passed into grouped. There is an alternative, closure-based syntax as well    
+    
+app.group("users") { users in
+    // GET /users
+    users.get { req in
+        ...
+    }
+    // POST /users
+    users.post { req in
+        ...
+    }
+    // GET /users/:id
+    users.get(":id") { req in
+        let id = req.parameters.get("id")!
+        ...
+    }
+}    
+  
+Nesting path prefixing route groups allows you to concisely define CRUD APIs.
 
+app.group("users") { users in
+    // GET /users
+    users.get { ... }
+    // POST /users
+    users.post { ... }
 
+    users.group(":id") { user in
+        // GET /users/:id
+        user.get { ... }
+        // PATCH /users/:id
+        user.patch { ... }
+        // PUT /users/:id
+        user.put { ... }
+    }
+}    
+    
+## Middleware    
+Middleware is a logic chain between the client and a Vapor route handler. It allows you to perform operations on incoming requests before they get to the route handler and on outgoing responses before they go to the client
+    
+In addition to prefixing path components, you can also add middleware to route groups
+    
+app.get("fast-thing") { req in
+    ...
+}
+app.group(RateLimitMiddleware(requestsPerMinute: 5)) { rateLimited in
+    rateLimited.get("slow-thing") { req in
+        ...
+    }
+}
+
+This is especially useful for protecting subsets of your routes with different authentication middleware
+
+app.post("login") { ... }
+let auth = app.grouped(AuthMiddleware())
+auth.get("dashboard") { ... }
+auth.get("logout") { ... }  
+
+## Redirections      
+Redirects are useful in a number of scenarios, such as forwarding old locations to new ones for SEO, redirecting an unauthenticated user to the login page or maintain backwards compatibility with the new version of your API.
+
+To redirect a request, use:
+
+req.redirect(to: "/some/new/path")    
+    
+You can also specify the type of redirect, for example to redirect a page permanently (so that your SEO is updated correctly) use:
+    
+req.redirect(to: "/some/new/path", type: .permanent)    
+    
+The different RedirectTypes are:
+
+- permanent - returns a 301 Permanent redirect
+- normal - returns a 303 see other redirect. This is the default by Vapor and tells the client to follow the redirect with a GET request
+- temporary - returns a 307 Temporary redirect. This tells the client to preserve the HTTP method used in the request    
+  
+# Content    
+Vapor's content API allows you to easily encode / decode Codable structs to / from HTTP messages. JSON encoding is used by default with out-of-the-box support for URL-Encoded Form and Multipart. The API is also configurable, allowing for you to add, modify, or replace encoding strategies for certain HTTP content types    
+    
+## Overview    
+To understand how Vapor's content API works, you should first understand a few basics about HTTP messages. Take a look at the following example request   
+    
+POST /greeting HTTP/1.1
+content-type: application/json
+content-length: 18
+
+{"hello": "world"}    
+    
+This request indicates that it contains JSON-encoded data using the content-type header and application/json media type. As promised, some JSON data follows after the headers in the body    
+    
+## Content Struct    
+The first step to decoding this HTTP message is creating a Codable type that matches the expected structure
+
+ struct Greeting: Content {
+    var hello: String
+}   
+    
+Conforming the type to Content will automatically add conformance to Codable alongside additional utilities for working with the content API   
+    
+Once you have the content structure, you can decode it from the incoming request using req.content    
+    
+app.post("greeting") { req in 
+    let greeting = try req.content.decode(Greeting.self)
+    print(greeting.hello) // "world"
+    return HTTPStatus.ok
+}    
+    
+The decode method uses the request's content type to find an appropriate decoder. If there is no decoder found, or the request does not contain the content type header, a 415 error will be thrown.
+
+That means that this route automatically accepts all of the other supported content types, such as url-encoded form:    
+    
+POST /greeting HTTP/1.1
+content-type: application/x-www-form-urlencoded
+content-length: 11
+
+hello=world    
+    
+In the case of file uploads, your content property must be of type "Data"
+
+struct Profile: Content {
+    var name: String
+    var email: String
+    var image: Data
+}    
+    
+Below are the media types the content API supports by default:
+
+- JSON	
+- Multipart	
+- URL-Encoded 
+- Plaintext	
+- HTML	
+    
+## Query    
+Vapor's Content APIs support handling URL encoded data in the URL's query string    
+    
+### Decoding   
+To understand how decoding a URL query string works, take a look at the following example request
+
+GET /hello?name=Vapor HTTP/1.1
+content-length: 0   
+    
+Just like the APIs for handling HTTP message body content, the first step for parsing (αναλύοντας) URL query strings is to create a struct that matches the expected structure    
+    
+struct Hello: Content {
+    var name: String?
+}    
+    
+Note that name is an optional String since URL query strings should always be optional. If you want to require a parameter, use a route parameter instead    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 =========================================================================================================================
 
 Start by looking at the classes defined in the Models directory:

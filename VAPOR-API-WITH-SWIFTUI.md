@@ -243,7 +243,7 @@ app.get("hello", "**") { req -> String in
 ## Body Streaming
 When registering a route using the on method, you can specify how the request body should be handled. By default, request bodies are collected into memory before calling your handler. This is useful since it allows for request content decoding to be synchronous (συγχρονισμένα) even though your application reads incoming requests asynchronously (ασύγχρονα)  
     
- By default, Vapor will limit streaming body collection to 16KB in size. You can configure this using app.routes
+By default, Vapor will limit streaming body collection to 16KB in size. You can configure this using app.routes
  
 // Increases the streaming body collection limit to 500kb
 app.routes.defaultMaxBodySize = "500kb"   
@@ -276,7 +276,7 @@ app.routes.caseInsensitive = true
 No changes are made to the originating request; route handlers will receive the request path components without modification   
         
 ## Viewing Routes    
-You can access your application's routes by making the Routes service or using app.routes.
+You can access your application's routes by making the Routes service or using app.routes.all
 
 print(app.routes.all) // [Route]    
 
@@ -458,17 +458,30 @@ struct Hello: Content {
     
 Note that name is an optional String since URL query strings should always be optional. If you want to require a parameter, use a route parameter instead    
     
+I used the async APIs on URLSession to send HTTP requests from the frontend, and I used Vapor and the MongoDB driver’s async APIs to handle requests on the backend
     
+QUESTION    
+sorry if this sounds dumb I still try to understand the connection between the frontend and the backend, lets say I want to build an e-shop with swiftUI for the frontend and vapor to handle the backend. When my user first open the app, he will see the login section, after he enters his username and password and presses the login button, a GET request will be sent to the server, it will check if the user and password match and will send back a response. My question is,  are both the request and response handled by vapor?
+
+ANSWER
+yes
+
+but a GET request is a bad choice for a login request 
     
+even if done over HTTPS, there's a good chance that it might get logged, with all the query parameters intact -> the users' credentials in it    
     
+What do you mean how I would approach it? There's not much room for creativity, you need a POST request with the credentials (username and password for example), and in return you send a token back that the app can store on the keychain, and include with later requests   
     
-    
-    
-    
-    
-    
-    
-    
+The token returned is used within a Bearer Authorization header and sent with each request after login. it is unique to the user and should change with every login request (and timeout server side). It is how the backend knows who the user is without requiring them send their credentials with every request.
+
+For the 4 main request types, there is a general rule of thumb (at least this is how I learned them)
+
+GET: Read only requests
+POST: CREATING a record or something (Login creating a session for example, adding items to a shopping cart, purchase, etc)
+PUT: UPDATING an existing record (password change, update profile)
+DELETE: ... Deleting a record.
+
+Things to keep in mind when designing the App/Server interactions.    
     
     
     
@@ -493,6 +506,78 @@ Note that name is an optional String since URL query strings should always be op
     
     
     
+    
+    
+The application contains a REST API which the iOS frontend uses to interact with it via HTTP requests
+https://github.com/mongodb/mongo-swift-driver/blob/main/Examples/FullStackSwiftExample/Backend/README.md
+    
+    
+We use Azure Data Studio (GUI - Graphical user interface) to read the data in our database without needing the API and the iOS app
+ 
+## Vapor file structure    
+    
+The Sources folder is where all of our code is going to live    
+    
+Controllers folder - by default it gives us a todo controller (a todo application) so here is where we can group logic inside of controllers rather than putting it all on a single file   
+    
+Migrations are used with the database. So we will be making database migrations, and this is things like preparing our database, meaning creating new tables in our database
+    
+Model is what models the data that is in our database and we can use these within our application
+  
+Configure function has just one function in here and it configures (διαμορφώνει) the database we will be using, it adds our Migration and it runs the routes function and then routes function is where all of our routes exist. So different endpoints that will be requesting from with our iOS application
+  
+Inside the Run folder, this contains the code that we need to get our application up and running. So you can see it calls the "Configure function"
+   
+Inside of tests by default, Vapor gives us a unit test that we can use. So the unit test right here is starting the application, we are going to the route/hello and then we want to assert (διεκδικώ) that this is okay and it gives us back "hello world"
+    
+We have a docker-compose file, this is used to create a multi Docker application. This configures our api to run and for the database to run in docker file. This is what is used to actually create a Docker image
+    
+Package.resolved - These are the exact versions of the packages that are inside of our vapor project that are defined in Package.swift (So if somebody were to download and clone your application from github, they will use these exact versions) 
+
+# Lesson 2
+    
+We will see how to use Vapor to create tables, use migrations, and how to read and write data to the database 
+    
+We will write our own routes inside of the controller rather than writing them inside the routes file, because if you have a big app it will get crowded
+
+Migrations are used when creating our database, so when you think we have version control within our project, when we type new lines and change the Xcode, we use GIT to tell us what have we changed? And we can revert back to certain points in time for migrations with the database. For a database we use migrations to do that, as opposed to using GIT, so we first need to import fluent ( fluent is an object relational mapper) and we will use that for migration. So the migration will then track the differences between our database for things that we add. So first lets create a struct, The two functions (prepare and revert) are the changes we want to make and then revert ( what we do if want to revert those changes)
+    
+Tables have rows and collumns, rows are all of our data and columns are the different properties of our data
+  
+// This is our Migration that we will make for our Users table
+// How do we represent the data that is in this table?
+// We have to create a Model for that   
+ 
+Model folder - User.swift
+import Fluent
+import Vapor
+
+final class User: Model, Content {
+    
+}
+
+We can think of it like a normal class that we would make within an iOS project.
+This is how we want to represent our data. But because we are using fluent, this is how we are going to query the data from the database
+    
+    
+What we need to do is to run our database first because currently it is not running. What vapor does, is it kind of just only runs the application. the API sort of side, it does not really run the database 
+    
+Type in terminal to start the database: docker compose up db 
+    
+What this does is it is creating our database for us within a Docker container and it is doing that by using our Docker file here in docker-compose.yml  
+    
+With Azure Data Studio, we can look at our data in the database directly without using the API. But to do that first we need to add a connection, so we open azure data studio and fill in the inputs required 
+    
+Lets create a new route that allows us to add data, because the routes we have so far are just allowing us to get data  
+    
+    
+    
+- HTTP: Learn the basics of how to make requests to and from servers.
+- Fluent: Learn how to use Fluent to save and manage your models in databases.
+- Controllers: Learn how to use controllers to route your requests and responses.
+- Leaf: Learn how Vapor’s Leaf module and its templating language allow you to build dynamic web sites directly.
+- Middleware: Learn how built-in Vapor modules can assist with common tasks such as validating users, settings required response headers, serving static files and more.
+One thing you can count on: After reading this book, you’ll be prepared to write your own server-side applications using Vapor and, of course, Swift.
     
     
     

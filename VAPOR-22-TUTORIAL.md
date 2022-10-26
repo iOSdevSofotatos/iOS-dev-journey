@@ -43,7 +43,7 @@ app.post("info") { req in
 }
 
 And Vapor makes this really easy by leveraging the power of Codable. Vapor makes heavy use of Codable to
-conform JSON to and from the data with its Content protocol. So let define a new struct that will use this to convert your incoming data into something you can use
+conform JSON to and from the data with its Content protocol. So lets define a new struct that will use this to convert your incoming data into something you can use
 
 We will create a new struct called InfoData and make that conform to Content:
 
@@ -106,21 +106,65 @@ If we send the request again we will get a JSON response with the request return
 
 ## Challenge: Your own Routes
 
+For this challenge we are going to create 3 different routes
+
+The first one will be a route that you can visit at /date that returns the current date as a string
+(import foundation)
+
+The second route will be a route at /counter/<NUMBER> that returns the count in JSON response
+(For example: /counter/4 will return "count": "4")
+
+The third route will be at /user-info, this will be a POST request which will accept JSON in the request body with a name as a String and the age as an Int. We will return a String that says: "Hello NAME, you are 22"
+
+### First Route
+app.get("date") { req -> String in
+    // Create Date
+    let currentDate = Date()
+    // Create Date Formatter
+    let dateFormatter = DateFormatter()
+    // Set Date Format
+    dateFormatter.dateFormat = "YY, MMM d, HH:mm:ss"
+    // Convert Date to String
+    return dateFormatter.string(from: currentDate)
+}
+     
+### Second Route
+app.get("counter", ":number") { req -> Number in
+    let number = try req.parameters.require("number", as: String.self)
+    return Number(number: number)
+}
+    
+struct Number: Content {
+    let number: String
+}
+    
+### Third Route
+app.post("user-info") { req -> String in
+    let userInfo = try req.content.decode(Greeting.self)
+    return "Hello \(userInfo.name), you are \(userInfo.age) years old!"
+}
+
+// we create this struct to represent the data that the client will send us
+struct Greeting: Content {
+    let name: String
+    let age: Int
+}
+
+In the next session of the course, we will build a real API, how to organize our routes with Controllers, use Fluent to interact with
+a database, Learn Fluent relationships and queries and integrate with PostgreSQL
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 

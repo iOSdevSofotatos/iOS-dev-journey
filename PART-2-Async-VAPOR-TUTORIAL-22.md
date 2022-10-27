@@ -140,7 +140,7 @@ func getAllUsersAndPosts(on req: Request) -> EventLoopFuture<HTTPStatus> {
 Note that if we "and" more than two futures together, we will get a nested tuple back, which we will need to handle. We will see an example of this in one of the sessions
 
 
-
+After you give it to the database, you need to wrap it up by using some promise, ("when you have the result, do this")
 
 
 

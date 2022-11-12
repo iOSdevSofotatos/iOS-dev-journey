@@ -56,15 +56,44 @@ So inside User, create a new struct called public that conforms to content and a
 next create some functions that convert a user into a public user. The first will be for normal user
 
 
+For the authentication part we will introduce a password and talk about how to store that password then we will introduce a token model to our application to enable you to authenticate users easily in the application
 
+In order to secure our application, we need to be able to identify our users. The most common way to do this is through a username or password combination. But first we need to know about password security:
 
+We must not store the passwords in plain text, so we must make sure that if someone does get access to the passwords, they can't be easily read. This means that you must store them in a secure format and one of the most common and secure ways to do that is by using the Bcrypt algorithm. Bcrypt is a slow hashing algorithm that can also apply randomness to each password. So it makes it difficult to bruteforce and we will be using this to secure the passwords
 
+So let's get started:
 
+In Xcode lets go to the User model and add a new property password which will be a String and add it to the initializer. Annotate the property with the field property wrapper and set the key to password
 
+Because we now have a password, when we create users through the API, we need to tweak things so that we hash the password before we save it
 
+Lets open up UsersController and inside createHandler we can hash the user's password with Bcrypt before saving it in the database
 
+Currently if we request all of the users or single user, we will return their password hash, which isn't something we particullary want to do, even if it is hashed
 
+What we can do is create a new Model that looks like a user just with the missing password
 
+So inside user, lets create a new type called public that conforms to content
+
+Now that it is all set, lets create a user with rested at:
+
+POST http://127.0.0.1:8080/api/users
+
+We notice that we don't get a password returned in the response. The same is true when we request all of the 
+users like so:
+
+GET http://127.0.0.1:8080/api/users
+
+A common way of authenticating users is to use a token, so we need a model for that
+
+lets create a new file called Token.swift in /models
+
+Lets import vapor and fluent and create a token class and make it conform to model and content
+
+then add an ID as UUID and a token property as a string
+
+The first app of the application that we want to add authentication to is the API, Specifically we want to ensure that we know the user that is creating the car
 
 
 

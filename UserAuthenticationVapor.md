@@ -111,6 +111,12 @@ POST http://127.0.0.1:8080/api/cars
 
 fill in the car info and send it, as we see we get back an 401 Unauthorized response!
 
+We have ensured that we know who the users are, who create, edit and delete cars and have learned about the different authentication methods
+
+We use basic and token authentication for the API, we also learned how to securely store passwords using Bcrypt that thet can't be easily read
+
+
+
  
 
 

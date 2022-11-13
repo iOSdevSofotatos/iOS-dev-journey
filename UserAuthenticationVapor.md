@@ -95,16 +95,23 @@ then add an ID as UUID and a token property as a string
 
 The first app of the application that we want to add authentication to is the API, Specifically we want to ensure that we know the user that is creating the car
 
+We have succesfully completed authentication and we will now test it in postman:
 
+POST http://127.0.0.1:8080/api/users/login
 
+click the authorization button and enter the username and password we created for our user nikos
 
+If we send the request, we should see the token in the response
 
+Copy the token value and then click the authorization button and remove the values we entered before
 
+Delete the username and password from the authorization and enter:
 
+POST http://127.0.0.1:8080/api/cars
 
+fill in the car info and send it, as we see we get back an 401 Unauthorized response!
 
-
-
+ 
 
 
 
